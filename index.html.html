@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>발해 사료 탐구</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Maru+Buri:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #0f172a;
+      --accent-color: #2563eb;
+      --accent-hover: #1d4ed8;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #334155;
+      --border-color: #cbd5e1;
+      --point-red: #ef4444;
+      --ancient-bg: #fef3c7;
+      --ancient-border: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.8;
+      word-break: keep-all;
+      font-size: 1.1rem; /* 기본 전체 글자 크기 확대 */
+    }
+
+    /* 상단 사료 바로가기 내비게이션 */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: #0f172a;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+    .top-nav-container {
+      max-width: 800px; /* 상단바 폭도 본문 크기에 맞춤 */
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover, .nav-btn.active-nav {
+      background: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+    }
+
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #fff;
+      padding: 3rem 1rem 2.5rem 1rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      letter-spacing: -1px;
+    }
+    header p {
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* 레이아웃 폭 축소: 기존 1000px -> 800px 로 폭 조절하여 가독성 개선 */
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .slide-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border-color);
+      display: none;
+    }
+    .slide-card.active {
+      display: block;
+      animation: fadeInUp 0.35s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide-card h2 {
+      font-size: 2rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .hero-banner {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 2.5rem 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .hero-banner h2 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      color: #fbbf24;
+    }
+    .hero-banner p {
+      font-size: 1.15rem;
+    }
+
+    .hall-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1.5rem;
+    }
+    .hall-btn {
+      background: #ffffff;
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.4rem 1.2rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .hall-btn:hover {
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
+    }
+    .hall-btn .tag {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--point-red);
+    }
+    .hall-btn .title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .hall-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .badge {
+      background: #fee2e2;
+      color: var(--point-red);
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .nav-link {
+      background: #f1f5f9;
+      color: var(--text-muted);
+      border: None;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-link:hover {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    /* 이미지 스타일 */
+    .img-container {
+      text-align: center;
+      margin: 1.5rem 0;
+      padding: 1.2rem;
+      background: #f1f5f9;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .img-container img {
+      width: 100%;
+      max-width: 100%;
+      max-height: 500px;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .img-caption {
+      margin-top: 0.8rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .mokkan-side-by-side {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .img-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.2rem;
+      margin: 1.2rem 0 1.5rem 0;
+    }
+    .img-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .img-card img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .img-card .card-title {
+      font-weight: 700;
+      margin-top: 0.8rem;
+      font-size: 1.15rem;
+    }
+
+    .kanji-box {
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.5rem 1.2rem;
+      text-align: center;
+    }
+    .kanji-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #1e293b;
+      line-height: 1.5;
+    }
+    .kanji-reading {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .kanji-meaning {
+      font-size: 1.1rem;
+      color: #1e40af;
+      background: #eff6ff;
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid var(--accent-color);
+      text-align: left;
+      line-height: 1.7;
+    }
+
+    .ancient-book {
+      background-color: var(--ancient-bg);
+      border: 1px solid #fcd34d;
+      border-left: 6px solid var(--ancient-border);
+      border-radius: 8px;
+      padding: 1.8rem;
+      margin: 1.5rem 0;
+      font-family: 'Maru Buri', serif;
+    }
+    .ancient-book h4 {
+      color: #78350f;
+      font-size: 1.2rem;
+      margin-bottom: 0.8rem;
+      border-bottom: 1px dashed #f59e0b;
+      padding-bottom: 0.4rem;
+    }
+    .ancient-book p {
+      font-size: 1.2rem;
+      color: #451a03;
+      line-height: 1.8;
+    }
+
+    .letter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.2rem;
+      margin: 1.5rem 0;
+    }
+    .letter-card {
+      background-color: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 5px solid #d97706;
+      border-radius: 8px;
+      padding: 1.5rem;
+      font-family: 'Maru Buri', serif;
+    }
+    .letter-card h4 {
+      color: #92400e;
+      font-size: 1.15rem;
+      margin-bottom: 0.8rem;
+      border-bottom: 1px dashed #fcd34d;
+      padding-bottom: 0.4rem;
+    }
+    .letter-card p {
+      font-size: 1.15rem;
+      color: #78350f;
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    /* 본문 사료 설명 박스 및 글자 크기 확대 */
+    .detail-info-box {
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.6rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .detail-info-box h4 {
+      color: var(--text-main);
+      font-size: 1.25rem;
+      margin-bottom: 0.8rem;
+      font-weight: 700;
+    }
+    .detail-info-box p {
+      font-size: 1.15rem; /* 글자 크기 키움 */
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    /* 큰 인용문 박스 - 글자 크기 확대 */
+    blockquote {
+      background: #f0fdf4;
+      border-left: 5px solid #22c55e;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 10px 10px 0;
+      color: #14532d;
+      line-height: 1.85;
+      font-size: 1.15rem; /* 설명 글자 크기 키움 */
+    }
+
+    /* 탐구 질문 박스 - 글자 크기 확대 */
+    .question-box {
+      background: #f0f9ff;
+      border: 1.5px solid #bae6fd;
+      border-radius: 12px;
+      padding: 1.8rem 1.5rem;
+      margin-top: 2rem;
+    }
+    .question-box h4 {
+      color: #0369a1;
+      margin-bottom: 1.2rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-bottom: 2px solid #bae6fd;
+      padding-bottom: 0.6rem;
+    }
+    .question-list {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .question-list li {
+      background: white;
+      padding: 1.2rem 1.4rem;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      font-size: 1.15rem; /* 질문 글자 크기 키움 */
+      font-weight: 600;
+      color: #0f172a;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 640px) {
+      header h1 { font-size: 2rem; }
+      .slide-card { padding: 1.5rem 1rem; }
+      .hall-header { flex-direction: column; align-items: flex-start; }
+      .nav-link { width: 100%; text-align: center; }
+      .nav-btn { font-size: 0.85rem; padding: 0.5rem 0.7rem; }
+      .img-card img { height: 220px; }
+      .detail-info-box p, blockquote, .question-list li { font-size: 1.05rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 바로가기 내비게이션 -->
+  <nav class="top-nav">
+    <div class="top-nav-container">
+      <button class="nav-btn" onclick="showSlide('slide-lobby')">🏠 메인 로비</button>
+      <button class="nav-btn" onclick="showSlide('slide-1')">삼국유사</button>
+      <button class="nav-btn" onclick="showSlide('slide-2')">목간</button>
+      <button class="nav-btn" onclick="showSlide('slide-3')">온돌</button>
+      <button class="nav-btn" onclick="showSlide('slide-4')">기와</button>
+      <button class="nav-btn" onclick="showSlide('slide-5')">구당서</button>
+      <button class="nav-btn" onclick="showSlide('slide-6')">외교문서</button>
+    </div>
+  </nav>
+
+  <header>
+    <h1>🏛️ 발해</h1>
+    <p>유적과 유물 속 단서를 찾아 발해가 고구려를 계승한 당당한 우리 역사임을 입증해 보세요.</p>
+  </header>
+
+  <div class="container">
+
+    <!-- 메인 로비 -->
+    <div id="slide-lobby" class="slide-card active">
+      <div class="hero-banner">
+        <h2>역사탐정단 여러분!!</h2>
+        <p>원하는 사료를 클릭하여 사료 탐구를 시작하세요.</p>
+      </div>
+
+      <div class="hall-grid">
+        <button class="hall-btn" onclick="showSlide('slide-1')">
+          <span class="tag">사료 1</span>
+          <span class="title">삼국유사</span>
+        </button>
+        <button class="hall-btn" onclick="showSlide('slide-2')">
+          <span class="tag">사료 2</span>
+          <span class="title">견고려사 목간</span>
+        </button>
+        <button class="hall-btn" onclick="showSlide('slide-3')">
+          <span class="tag">사료 3</span>
+          <span class="title">온돌 유적</span>
+        </button>
+        <button class="hall-btn" onclick="showSlide('slide-4')">
+          <span class="tag">사료 4</span>
+          <span class="title">수막새와 치미</span>
+        </button>
+        <button class="hall-btn" onclick="showSlide('slide-5')">
+          <span class="tag">사료 5</span>
+          <span class="title">구당서</span>
+        </button>
+        <button class="hall-btn" onclick="showSlide('slide-6')">
+          <span class="tag">사료 6</span>
+          <span class="title">발해 외교문서</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 사료 1: 삼국유사 -->
+    <div id="slide-1" class="slide-card">
+      <div class="hall-header">
+        <span class="badge">사료 1</span>
+        <button class="nav-link" onclick="showSlide('slide-lobby')">◀ 메인 로비로 돌아가기</button>
+      </div>
+      <h2>1. 삼국유사</h2>
+      <h3 style="font-size: 1.2rem; color: var(--text-muted); margin-top: 0.3rem; font-weight: 500;">발해를 세운 사람</h3>
+      
+      <div class="img-container">
+        <img src="삼국유사.jpg" alt="삼국유사" onerror="this.src='삼국유사.png';">
+      </div>
+
+      <div class="ancient-book">
+        <h4>📜 『삼국유사』 기록</h4>
+        <p>"고구려 장수였던 조영은 성이 대씨인데, 남은 군사를 모아 …… 나라를 세우고 국호를 발해라고 했다."</p>
+      </div>
+
+      <div class="question-box">
+        <h4>🔍 탐구 질문</h4>
+        <ul class="question-list">
+          <li>1. 대조영은 원래 어느 나라의 장수 출신이었나요?</li>
+          <li>2. 대조영이 모았던 '남은 군사'는 어느 나라의 유민을 뜻하나요?</li>
+          <li>3. 삼국유사 기록을 통해 알 수 있는 발해 건국의 의의는 무엇인가요?</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 사료 2: 목간 -->
+    <div id="slide-2" class="slide-card">
+      <div class="hall-header">
+        <span class="badge">사료 2</span>
+        <button class="nav-link" onclick="showSlide('slide-lobby')">◀ 메인 로비로 돌아가기</button>
+      </div>
+      <h2>2. 목간</h2>
+
+      <div class="mokkan-side-by-side">
+        <div class="img-container">
+          <img src="목간.jpg" alt="목간" onerror="this.src='목간.png';">
+          <div class="img-caption">목간</div>
+        </div>
+
+        <div class="kanji-box">
+          <span class="kanji-text">遣高麗使天平寶字二年十月八日進二階敍</span>
+          <span class="kanji-reading">(견고려사천평보자이년십월팔일진이계서)</span>
+          <div class="kanji-meaning">
+            "고려(고구려)에 파견하는 사신에게 천평보자 2년(758년) 10월 8일, 품계를 2단계 높여 내린다"
+          </div>
+        </div>
+      </div>
+
+      <blockquote>
+        일본의 옛 궁궐 터에서 출토된 목간입니다. 목간은 글자를 기록하기 위해 나무를 얇고 길쭉하게 다듬은 나무판을 말합니다.<br><br>
+        목간에는 <strong>遣高麗使天平寶字二年十月八日進二階敍(견고려사천평보자이년십월팔일진이계서)</strong>라는 22자의 글자가 기록되어 있습니다. "고려(고구려)에 파견하는 사신에게 천평보자 2년(758년) 10월 8일, 품계를 2단계 높여 내린다"라는 뜻입니다.<br><br>
+        당시 일본은 발해로 사신을 보내며 고려(고구려)에 보내는 사신이라고 표현했습니다. 당시 일본은 발해를 고려(고구려)라고 불렀음을 알 수 있습니다.
+      </blockquote>
+
+      <div class="question-box">
+        <h4>🔍 탐구 질문</h4>
+        <ul class="question-list">
+          <li>1. 이 목간이 작성된 시기(758년)는 고구려가 망하고 어떤 나라가 세워져 있던 때인가요?</li>
+          <li>2. 일본이 발해에 보낸 사신을 무엇이라고 불렀나요?</li>
+          <li>3. 일본은 그 당시 발해가 어떤 나라를 계승했다고 생각하고 있었나요?</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 사료 3: 온돌 -->
+    <div id="slide-3" class="slide-card">
+      <div class="hall-header">
+        <span class="badge">사료 3</span>
+        <button class="nav-link" onclick="showSlide('slide-lobby')">◀ 메인 로비로 돌아가기</button>
+      </div>
+      <h2>3. 온돌</h2>
+      <h3 style="font-size: 1.2rem; color: var(--text-muted); margin-top: 0.3rem;">생활 양식 비교</h3>
+
+      <div class="img-grid">
+        <div class="img-card">
+          <img src="발해온돌.jpg" alt="발해온돌" onerror="this.src='발해온돌.png';">
+          <div class="card-title">🏛️ 발해온돌 (상경성)</div>
+        </div>
+        <div class="img-card">
+          <img src="고구려온돌.jpg" alt="고구려온돌" onerror="this.src='고구려온돌.png';">
+          <div class="card-title">🔥 고구려온돌</div>
+        </div>
+      </div>
+
+      <div class="detail-info-box">
+        <h4 style="color: #1e3a8a;">🏛️ 발해 상경성 온돌</h4>
+        <p>발해의 수도였던 상경성 궁궐터와 함경남도 신포시, 러시아 연해주의 성터 유적 등 발해의 여러 집터에서 온돌 시설이 다수 발굴되었습니다. 발해 유적에서 발견된 온돌은 방 일부에만 ‘ㄱ’ 자나 ‘ㄷ’ 자 모양으로 구들을 설치한 쪽구들 구조를 갖추고 있습니다.</p>
+      </div>
+
+      <div class="detail-info-box">
+        <h4 style="color: #b91c1c;">🔥 고구려 온돌</h4>
+        <p>고구려는 겨울철 날씨가 매우 매서운 북부 한반도와 만주 지역에 위치해 있었기 때문에 일찍부터 추위를 이겨내기 위해 온돌을 개발해 사용했습니다. 다만 오늘날이나 조선 시대처럼 방 전체에 온돌을 깔았던 것과 달리, 방바닥의 일부에만 'ㄱ' 자, 'ㄷ' 자, 또는 'ㅡ' 자 모양으로 구들을 깔았던 '쪽구들' 방식이었습니다.</p>
+      </div>
+
+      <div class="question-box">
+        <h4>🔍 탐구 질문</h4>
+        <ul class="question-list">
+          <li>1. 발해 온돌이 고구려 온돌과 비슷한 점은 무엇인가요?</li>
+          <li>2. 집을 짓고 난방을 하는 의식주 생활 습관은 쉽게 변하지 않습니다. 발해 사람들이 고구려 특유의 온돌 방식으로 추운 겨울을 이겨냈다는 사실은 발해의 생활 문화가 어느 나라에서 온 것임을 말해주나요?</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 사료 4: 치미와 수막새 -->
+    <div id="slide-4" class="slide-card">
+      <div class="hall-header">
+        <span class="badge">사료 4</span>
+        <button class="nav-link" onclick="showSlide('slide-lobby')">◀ 메인 로비로 돌아가기</button>
+      </div>
+      <h2>4. 치미와 수막새</h2>
+      <h3 style="font-size: 1.2rem; color: var(--text-muted); margin-top: 0.3rem;">건축 양식 비교</h3>
+
+      <div class="img-container">
+        <img src="기와.jpg" alt="기와" onerror="this.src='기와.png';">
+        <div class="img-caption">기와</div>
+      </div>
+
+      <div class="detail-info-box">
+        <h4>🏛️ 치미 비교 설명</h4>
+        <p>
+          치미는 건물의 지붕 꼭대기 마루(용마루) 양 끝을 장식하는 기와입니다. 고구려 치미는 평양 등에서 출토되었으며, 거대하고 웅장하며 새(솔개)의 꼬리와 같은 모양을 띠고 있습니다. 발해 치미는 상경성 유적 등에서 출토되었는데, 높이가 약 87cm이고 표면에 연한 초록빛이 나는 유약이 칠해져 있습니다. 고구려 치미가 발해 치미보다 두 배 남짓 크고 세부 형태에 일부 차이가 있지만, 기본적인 구조와 선의 흐름을 볼 때 발해 치미는 고구려 치미의 영향을 크게 받아 제작되었음을 알 수 있습니다.
+        </p>
+      </div>
+
+      <div class="detail-info-box">
+        <h4>🌸 수막새 비교 설명</h4>
+        <p>
+          수막새는 기와지붕에서 기왓등 끝부분을 장식하는 동그란 기와입니다. 고구려 수막새는 무늬가 뚜렷하고 힘이 넘치는 연꽃무늬 양식이 대표적인 특징입니다. 발해 수막새 역시 원 주위를 꽃잎 모양으로 둘러싼 간결한 형태로 고구려 수막새와 매우 닮아 있습니다. 특히 활짝 핀 모양의 연꽃을 표현한 신라나 백제의 수막새와 달리, 발해 수막새는 고구려 수막새처럼 연꽃의 꽃씨, 둥근 선, 아직 피지 않은 꽃봉오리 형태의 독특한 연꽃무늬 양식을 그대로 계승하고 있습니다.
+        </p>
+      </div>
+
+      <div class="question-box">
+        <h4>🔍 탐구 질문</h4>
+        <ul class="question-list">
+          <li>1. 고구려 치미와 발해 치미의 비슷한 점은 무엇인가요?</li>
+          <li>2. 연꽃무늬 고구려 수막새와 발해 수막새는 어떤 점이 비슷한가요?</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 사료 5: 중국 기록, 구당서 -->
+    <div id="slide-5" class="slide-card">
+      <div class="hall-header">
+        <span class="badge">사료 5</span>
+        <button class="nav-link" onclick="showSlide('slide-lobby')">◀ 메인 로비로 돌아가기</button>
+      </div>
+      <h2>5. 중국 기록, 구당서</h2>
+      <h3 style="font-size: 1.2rem; color: var(--text-muted); margin-top: 0.3rem;">중국 역사책 구당서 기록 분석</h3>
+
+      <div class="ancient-book">
+        <h4>📜 『구당서(舊唐書)』 기록</h4>
+        <p style="text-align: center; font-weight: bold; font-size: 1.35rem; color: #78350f; margin: 1rem 0;">
+          "대조영은 본래 고려(고구려)의 별종이다."
+        </p>
+      </div>
+
+      <div class="detail-info-box">
+        <h4>💡 핵심 용어 해석: '고려의 별종(高麗別種)'</h4>
+        <p>'별종'이란 갈라져 나온 지파를 뜻합니다.</p>
+      </div>
+
+      <div class="question-box">
+        <h4>🔍 탐구 질문</h4>
+        <ul class="question-list">
+          <li>1. 당나라의 역사서인 『구당서』에서는 발해를 세운 대조영의 출신을 무엇이라고 적어 놓았나요?</li>
+          <li>2. 기록 속 '고려'는 어느 나라를 뜻하며, '별종(한 갈래)'이라는 말은 대조영이 어떤 나라 사람 계통임을 알려주나요?</li>
+          <li>3. 이 기록을 남긴 나라가 신라나 발해가 아니라 이웃 나라인 '당나라'라는 점에서, 당나라는 대조영과 발해라는 나라의 뿌리를 어느 나라로 인식하고 있었음을 알 수 있나요?</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 사료 6: 외교 문서 -->
+    <div id="slide-6" class="slide-card">
+      <div class="hall-header">
+        <span class="badge">사료 6</span>
+        <button class="nav-link" onclick="showSlide('slide-lobby')">◀ 메인 로비로 돌아가기</button>
+      </div>
+      <h2>6. 외교 문서</h2>
+      <h3 style="font-size: 1.2rem; color: var(--text-muted); margin-top: 0.3rem;">발해 공식 외교 문서</h3>
+
+      <div class="letter-grid">
+        <div class="letter-card">
+          <h4>📜 727년 발해 무왕의 외교 문서</h4>
+          <p>"발해가 고려의 옛 땅을 회복하고, 부여의 풍속을 계승했다."</p>
+        </div>
+        <div class="letter-card">
+          <h4>📜 759년 발해 문왕의 외교 문서</h4>
+          <p>"고려(고구려) 국왕 대흠무가 말한다……"</p>
+        </div>
+      </div>
+
+      <div class="question-box">
+        <h4>🔍 탐구 질문</h4>
+        <ul class="question-list">
+          <li>1. 발해 무왕이 일본에 보낸 문서에서 발해가 되찾았다고 밝힌 '옛 땅'은 어느 나라의 것인가요?</li>
+          <li>2. 발해 문왕(대흠무)은 일본에 보낸 외교 문서에서 자신을 스스로 어떻게 표현하였나요?</li>
+          <li>3. 고구려가 5세기 무렵부터 나라 이름을 '고려'라고도 불렀다는 사실을 떠올려 볼 때, 발해 문왕이 스스로를 '고려 국왕'이라 부른 까닭은 무엇일까요?</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function showSlide(slideId) {
+      const slides = document.querySelectorAll('.slide-card');
+      slides.forEach(slide => slide.classList.remove('active'));
+
+      const targetSlide = document.getElementById(slideId);
+      if (targetSlide) {
+        targetSlide.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      const navBtns = document.querySelectorAll('.nav-btn');
+      navBtns.forEach(btn => btn.classList.remove('active-nav'));
+      
+      if (slideId === 'slide-lobby') {
+        navBtns[0].classList.add('active-nav');
+      } else {
+        const index = parseInt(slideId.replace('slide-', ''));
+        if (navBtns[index]) {
+          navBtns[index].classList.add('active-nav');
+        }
+      }
+    }
+  </script>
+</body>
+</html>
